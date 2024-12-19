@@ -1,0 +1,44 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"] // Incluye "linux-musl"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id               String       @id @default(uuid()) @db.Char(36)
+  email            String       @unique
+  emailVerified    DateTime?
+  password         String
+  role             user_role    @default(user)
+  image            String?
+  createAt         DateTime     @default(now())
+  updateAt         DateTime?
+  verificationCode String?
+  userprofile      userprofile?
+}
+
+model userprofile {
+  id          String       @id @default(uuid()) @db.Char(36)
+  firstname   String
+  lastname    String
+  province    String
+  commune     String
+  street      String
+  houseNumber Int
+  postalCode  String
+  phone       String
+  // Referencias
+  userId        String    @unique @db.Char(36)
+
+  // Relaciones
+  user          user      @relation(fields: [userId], references: [id])
+}
+
+enum user_role {
+  admin
+  user
+}
